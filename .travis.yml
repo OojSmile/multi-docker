@@ -1,8 +1,10 @@
 sudo: required
+language: generic
+
 services:
   - docker
 
-befire_install:
+before_install:
   - docker build -t oojsmile/react-test -f ./client/Dockerfile.dev ./client
 
 script:
