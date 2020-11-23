@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+befire_install:
+  - docker build -t oojsmile/react-test -f ./clinet/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true oojsmile/react-test npm test
+
+after_success:
+  - docker build -t oojsmile/multi-client ./client
+  - docker build -t oojsmile/multi-nginx ./nginx
+  - docker build -t oojsmile/multi-server ./server
+  - docker build -t oojsmile/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push oojsmile/multi-client
+  - docker push oojsmile/multi-nginx
+  - docker push oojsmile/multi-server
+  - docker push oojsmile/multi-worker
